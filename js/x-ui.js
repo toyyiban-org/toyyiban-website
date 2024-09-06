@@ -59,6 +59,17 @@ export function alert(content, state, duration) {
 	setTimeout(() => alertEl.removeChild(el), duration || 2000);
 }
 
+/* ATTENTION */
+export function hey(e) {
+	e.classList.add('hey');
+	// e.addEventListener( 'animationend',  ev => ev.target.classList.remove('hey'));
+	e.addEventListener( 'animationend',  ev => hey_(ev));
+}
+function hey_(ev) {
+	ev.target.classList.remove('hey');
+	ev.target.removeEventListener('animationend', hey_);
+
+}
 
 /* CUSTOM ELEMENTS
 - XElement a tiny wrapper to stabilize custom elements
@@ -197,10 +208,14 @@ export class XPanel extends XElement {
 		const a = this.anchor;
 		if (a) {
 			const self = this;
+			const scrollY = window.pageYOffset;
+			const scrollX = window.pageXOffset;
+
 			pop.computePosition(a, this, {
 				placement: this.dataset.pos,
-				middleware: [pop.offset(self.dataset.offset || 3), pop.flip(), pop.shift({crossAxis:true})],
+				middleware: [pop.offset(self.dataset.offset || 3), pop.flip(), pop.shift()],
 			}).then(({x, y, placement}) => {
+				window.scrollTo(scrollX, scrollY);
 				const s = self.style;
 				s.left = `${x}px`; s.top = `${y}px`;
 				s.transformOrigin = panelOrigin[placement];
@@ -228,10 +243,14 @@ export class XPanel extends XElement {
 
 	updatePos() {
 		const self = this;
+		const scrollY = window.pageYOffset;
+		const scrollX = window.pageXOffset;
+
 		pop.computePosition(this.anchor, this, {
 			placement: this.dataset.pos,
-			middleware: [pop.offset(self.dataset.offset || 3), pop.flip(), pop.shift({crossAxis:true})],
+			middleware: [pop.offset(self.dataset.offset || 3), pop.flip(), pop.shift()],
 		}).then(({x, y}) => {
+			window.scrollTo(scrollX, scrollY);
 			const s = self.style;
 			self.style.left = `${x}px`; self.style.top = `${y}px`;
 		});
@@ -306,7 +325,7 @@ customElements.define('x-modal-basic', class extends XModal {
 			<x-menu hidden data-float data-cover data-anchor="[data-id='${menuA}']" data-pos="bottom-end" data-cancel></x-menu>
 		</section>
 		<section class="content"></section>
-		<section class="action flex-row g items-center w-full justify-end px pb"></section>`;
+		<section class="action flex-row g items-center w-full justify-end px pt-xs pb"></section>`;
 
 		this.headerEl = this.querySelector('.header');
 		this.titleEl = this.querySelector('.title');
@@ -375,6 +394,7 @@ customElements.define('x-modal-basic', class extends XModal {
 				el.textContent = par.action[k];
 				el.addEventListener('click', () => {
 					self.returnValue = k;
+					if (k == 'ok' && par.actionCheck && !par.actionCheck(self)) return;
 					self.close();
 				});
 				this.actionEl.append(el);
@@ -468,6 +488,7 @@ customElements.define('x-human-time', class extends XElement {
 		this._value = this.dataset.value;
 		this._from = this.dataset.from;
 		this._to = this.dataset.to;
+		this._simple = this.dataset.simple != undefined;
 		this.generate();
 	}
 
@@ -475,7 +496,7 @@ customElements.define('x-human-time', class extends XElement {
 		let ret = null;
 		const f = this.dataset.format;
 		if (f == 'since') {
-			if (this._value) ret = TimeUtil.humanSince(this._value);
+			if (this._value) ret = TimeUtil.humanSince(this._value, this._simple);
 
 		} else if (f == 'duration') {
 			if (this._from || this._to) ret = TimeUtil.humanDuration(this._from, this._to);
@@ -1287,10 +1308,10 @@ customElements.define('x-audio-player', class extends XElement {
 	_create() {
 		this.classList.add('audio-player');
 		this.innerHTML = `<audio></audio>
-		<div class="flex-row gap-xs border rounded-xl items-center">
+		<div class="w-fit flex-row gap-xs border rounded-xl items-center">
 			<button class="hPlay flat" data-tip="Play"><svg class="icon-xl"><use href="#icon-play-fill"></use></svg></button>
 			<button class="hPause flat" data-tip="Pause" hidden><svg class="icon-xl"><use href="#icon-pause-fill"></use></svg></button>
-			<span class="hTitle text-sm text-b">Audio</span>
+			<p class="hTitle text-sm text-b pr" hidden>Audio</p>
 		</div>`;
 		this.audioEl = this.querySelector('audio');
 		this.playEl = this.querySelector('.hPlay');
@@ -1298,10 +1319,12 @@ customElements.define('x-audio-player', class extends XElement {
 		this.titleEl = this.querySelector('.hTitle');
 		if (this.dataset.src) this.src = this.dataset.src;
 		if (this.dataset.title) this.title = this.dataset.title;
+		if (this.dataset.noTitle == undefined) this.titleEl.show(true);
 
 		const self = this;
 		this.playEl.addEventListener('click', () => { self.audioEl.play(); self.resetBtn(); });
 		this.pauseEl.addEventListener('click', () => { self.audioEl.pause(); self.resetBtn(); });
+		this.audioEl.addEventListener('ended', () => this.resetBtn());
 		this.resetBtn();
 	}
 

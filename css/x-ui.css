@@ -54,6 +54,10 @@ progress {vertical-align: baseline}
 
 summary {display: list-item}
 
+summary.clear {list-style-type: none}
+summary.clear::-webkit-details-marker {display: none; content: ''}
+summary.clear::marker {content: ''}
+
 
 /* DEFAULT */
 :root {
@@ -82,6 +86,8 @@ summary {display: list-item}
 	--bg-disabled: #e5e7eb;
 	--acc-disabled: #9ca3af;
 
+	--hl: #fef3c7;				/* text hilighter */
+
 	--neutral: #6b7280;
 	--success: #22c55e;
 	--warning: #fb923c;
@@ -90,6 +96,10 @@ summary {display: list-item}
 	--green: #16a34a;
 	--red: #dc2626;
 	--orange: #fb923c;
+
+	--me-s: #d2bdb1;
+	--me: #b2978f;
+	--me-b: #7d5e4c;
 }
 
 * {margin: 0; padding: 0}
@@ -532,7 +542,11 @@ html.noscroll {position: fixed; overflow-y: scroll; width: 100%}
 	box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.15), 0 8px 10px -6px rgb(0 0 0 / 0.15);
 	scale: 0;
 }
-.modal > .content {max-height: calc(100vh - 4rem) !important; overflow-y: auto}
+.modal > .content {
+	max-height: calc(100vh - 4.6rem) !important;
+	max-height: calc(100dvh - 4.6rem) !important;
+	overflow-y: auto
+}
 
 .modal.transparent {
 	background-color: transparent; border: 0; box-shadow: none;
@@ -708,9 +722,15 @@ html.noscroll {position: fixed; overflow-y: scroll; width: 100%}
 .markdown a {color:var(--acc)}
 .markdown a:hover {text-decoration:underline}
 .markdown a:active {color:var(--acc)}
-.markdown a:visited {color:var(--acc-d)}
+.markdown a:visited {color:var(--acc-b)}
 
 .markdown .audio-player * {margin:0 !important}
+
+.markdown .reference {display: flex; flex-direction: column; gap:0.5rem; margin-bottom:0 !important}
+.markdown .reference * {margin-bottom:0 !important}
+.markdown .reference p {font-weight: bolder; border-bottom:1px dotted var(--border); padding-bottom:0.5rem}
+.markdown .reference dl {font-size: 0.875rem; column-gap: 0.5rem}
+.markdown .reference .hl:target {background-color: var(--hl)}
 
 .markdown-edit {width: 100%; height: 100%}
 .markdown-edit > .header {
@@ -756,15 +776,15 @@ html.noscroll {position: fixed; overflow-y: scroll; width: 100%}
 }
 
 .attention {
-	position:absolute; left:0; top:0; z-index:1001000;
-	width:100%; height:100vh;
+	position:fixed; left:0; top:0; z-index:1001000;
+	width:100%; height:100vh; height: 100dvh;
 	pointer-events: none;
 }
 
 @media (max-width: 767px) {
 	textarea, select, input:not([type="checkbox"]):not([type="radio"]) {width: 100%}
 
-	.modal {width: 100%; max-width: calc(100% - 2rem) !important;}
+	.modal:not(.transparent) {width: 100%; max-width: calc(100% - 2rem) !important}
 
 	.drawer {
 		position: fixed; top: 0; left: -100vw; bottom:0;
@@ -794,6 +814,12 @@ html.noscroll {position: fixed; overflow-y: scroll; width: 100%}
 	to {opacity: 1.0}
 }
 .blink-subtle {animation: blink-subtle var(--delay, 1.5s) infinite}
+
+@keyframes hey {
+	from, to {background-color: var(--bg)}
+	50% {background-color: var(--acc-s)}
+}
+.hey {animation: hey var(--delay, 0.8s) 2}
 
 
 /* UTILITY, higher importance than default */
@@ -916,7 +942,7 @@ html.noscroll {position: fixed; overflow-y: scroll; width: 100%}
 .w-ideal-xl {width:100%; max-width:56rem}
 
 .h-full {height: 100%}
-.h-screen {height: 100vh}
+.h-screen {height: 100vh; height: 100dvh}
 .h-min {height: min-content}
 .h-max {height: max-content}
 .h-fit {height: fit-content}
@@ -936,14 +962,14 @@ html.noscroll {position: fixed; overflow-y: scroll; width: 100%}
 
 .min-h-0 {min-height: 0}
 .min-h-full {min-height: 100%}
-.min-h-screen {min-height: 100vh}
+.min-h-screen {min-height: 100vh; min-height: 100dvh}
 .min-h-min {min-height: min-content}
 .min-h-max {min-height: max-content}
 .min-h-fit {min-height: fit-content}
 
 .max-h-0 {max-height: 0}
 .max-h-full {max-height: 100%}
-.max-h-screen {max-height: 100vh}
+.max-h-screen {max-height: 100vh; max-height: 100dvh}
 .max-h-min {max-height: min-content}
 .max-h-max {max-height: max-content}
 .max-h-fit {max-height: fit-content}
@@ -1085,6 +1111,10 @@ html.noscroll {position: fixed; overflow-y: scroll; width: 100%}
 .text-green {color: var(--green)}
 .text-red {color: var(--red)}
 .text-orange {color: var(--orange)}
+
+.text-me-s {color: var(--me-s)}
+.text-me {color: var(--me)}
+.text-me-b {color: var(--me-b)}
 
 .text-shadow {text-shadow: 1px 1px 4px rgb(0 0 0 / 0.3)}
 

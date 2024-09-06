@@ -157,6 +157,26 @@ Element.prototype.swapWith = function(target) {
 	}
 };
 
+Element.prototype.partiallyVisible = function() {
+	const r = this.getBoundingClientRect();
+	const h = (window.innerHeight || document.documentElement.clientHeight);
+	const w = (window.innerWidth || document.documentElement.clientWidth);
+	const vert = (r.top <= h) && ((r.top + r.height) >= 0);
+	const horiz = (r.left <= w) && ((r.left + r.width) >= 0);
+	return (vert && horiz);
+}
+
+Element.prototype.fullyVisible = function() {
+	const r = this.getBoundingClientRect();
+	const h = (window.innerHeight || document.documentElement.clientHeight);
+	const w = (window.innerWidth || document.documentElement.clientWidth);
+	return ((r.left >= 0)
+		&& (r.top >= 0)
+		&& ((r.left + r.width) <= w)
+		&& ((r.top + r.height) <= h)
+	);
+}
+
 
 /* STRING */
 export class StrUtil {
@@ -248,22 +268,22 @@ export class TimeUtil {
 		});
 	}
 
-	static humanSince(date) { // time breakdown from moment.js
+	static humanSince(date, simple) { // time breakdown from moment.js
 		const now = new Date(Date.now());
 		if (typeof date === 'string') date = new Date(date);
 		const diff = Math.round((now - date) / 1000); // diff in seconds
 
-		if (diff < 45) return 'few seconds ago';
-		else if (diff < 90) return 'a minute ago';
-		else if (diff < 2700) return `${Math.round(diff/60)} minutes ago`; // <45m
-		else if (diff < 5400) return 'an hour ago'; // <90m
-		else if (diff < 79200) return `${Math.round(diff/3600)} hours ago`; // <22h
-		else if (diff < 129600) return 'a day ago'; // <36h
-		else if (diff < 2246400) return `${Math.round(diff/86400)} days ago`; // <26d
-		else if (diff < 3974400) return 'a month ago'; // <46d
-		else if (diff < 27648000) return `${Math.round(diff/2629800)} months ago`; // < 320d
-		else if (diff < 47347200) return 'a year ago'; // < 548d
-		else return `${Math.round(diff/31556952)} years ago`;
+		if (diff < 45) return (simple)? diff+'s ago' : 'few seconds ago';
+		else if (diff < 90) return (simple)? '1m ago' : 'a minute ago';
+		else if (diff < 2700) return `${Math.round(diff/60)}${(simple)?'m':' minutes'} ago`; // <45m
+		else if (diff < 5400) return (simple)? '1h ago' : 'an hour ago'; // <90m
+		else if (diff < 79200) return `${Math.round(diff/3600)}${(simple)?'h':' hours'} ago`; // <22h
+		else if (diff < 129600) return (simple)? '1d ago' : 'a day ago'; // <36h
+		else if (diff < 2246400) return `${Math.round(diff/86400)}${(simple)?'d':' days'} ago`; // <26d
+		else if (diff < 3974400) return (simple)? '1mo ago' : 'a month ago'; // <46d
+		else if (diff < 27648000) return `${Math.round(diff/2629800)}${(simple)?'mo':' months'} ago`; // < 320d
+		else if (diff < 47347200) return (simple)? '1y ago' : 'a year ago'; // < 548d
+		else return `${Math.round(diff/31556952)}${(simple)?'y':' years'} ago`;
 	}
 
 	static humanDuration(from, to) {
@@ -330,7 +350,14 @@ export class TimeUtil {
 /* URL */
 export const urlUtil = {
 	params: new URLSearchParams(window.location.search),
-	relative: window.location.pathname + window.location.search
+	relative: window.location.pathname + window.location.search,
+	isValid: url => {
+		try {
+		  url = new URL(url);
+		  return url.protocol === 'http:' || url.protocol === 'https:';
+		} catch (_) { return false; }
+	},
+	isEmail: addr => { return /^\S+@\S+\.\S+$/.test(addr); }
 }
 
 export class RebuildUrl {
