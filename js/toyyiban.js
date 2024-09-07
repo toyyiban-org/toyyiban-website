@@ -31,6 +31,7 @@ customElements.define('t-footer', class extends XElement {
 		<p class="whitespace-nowrap">© 2023-${new Date().getFullYear()} toyyiban.org</p>
 		<a href="/about">About us</a>
 		<a href="/contact">Contact us</a>
+        <a href="#" class="item" data-tip="Github"><svg class="icon-lg"><use href="#icon-github"></use></svg></a>
         </footer>`;
 	}
 });
