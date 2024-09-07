@@ -7,7 +7,7 @@ customElements.define('t-header', class extends XElement {
 	_create() {
 		this.innerHTML = `<header class="flex-row g bg border-b p items-center">
         <a href="/"><img src="/img/logo.svg" style="width:6rem; min-width:6rem; max-width:6rem"/></a>
-        <div class="grow text-xl text-center">Toyyiban - A Decentralized Ummah</div>
+        <div class="grow text-xl text-center">Toyyiban - An Open Ummah Network</div>
         <button id="hMenuBtn" class="flat hover"><svg class="icon-xl"><use href="#icon-list"></use></svg></button>
         <x-menu hidden id="hMenu" data-float data-cover data-anchor="#hMenuBtn" data-pos="bottom-end" data-cancel>
             <a data-value="home" class="item icon-text"><svg class="icon"><use href="#icon-house-fill"></use></svg> <span>Home</span></a>
