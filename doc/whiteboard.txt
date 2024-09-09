@@ -1,3 +1,52 @@
 Rough Ideas
 -----------
+- Focus is on preservation of user data, not privacy/hiding sensitive data.
+
+
+STATION (PLATFORM / APP / NODE)
+-------------------------------
+- A data service nodes connected to the netword.
+- Station has it's own user block list, so it can follow local authority regulations.
+- Each station keep PGP keys of all others it is connected too.
+- Each station may choose who to connect with or all (compliant reasons).
+- Station may choose entity types to support.
+- To join network, new station need to register (send station.json and wait human approval)
+with one available stations, if successful other stations will try to connect with it.
+- No prime station, all are equal.
+
+
+File: STATION.JSON - identity, config, moderation ruleset, etc.
+- An important configuration file for every
+- Shared between connected stations.
+
+
+EVENT STORE
+-----------
+- Original event (JSON) received is optimized (image reduced to max size etc).
+- Event encoded into CBOR (cbor-x for JS) before added to data buffer.
+- Upon reaching size limit (50mb?) per rotation file, data buffer will be compressed using ZLIB and flush.
+
+
+RELAY
+-----
+- Handle ping, gossip, requests between stations.
+- Whenever someone spin up new station, they may run relay first to cache latest update and
+then request a data-dump (starting from last entry in relay) from available stations.
+- If cache in relay is update/delete/merge , then keep the cache for execution after dump finish loaded.
+
+
+MODERATION
+----------
+- Moderation is independent of stations, however a station may send report to others to take action.
+
+
+
+EVENT ACTION
+------------
+- Create, Replace, Merge, Delete
+
+
+ENTITY
+------
+- Use improved ERI (Entity Resource Identifier) with station name. (eg: user@station.entity.value)
 
